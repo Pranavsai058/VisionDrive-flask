@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VisionDrive - Road Navigation System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>VisionDrive</h1>
+            <p>Intelligent Road Navigation</p>
+            <nav>
+                <a href="{{ url_for('index') }}" class="nav-link active">Home</a>
+                <a href="{{ url_for('history') }}" class="nav-link">History</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="upload-section">
+            <h2>Upload Road Images</h2>
+            <form id="uploadForm" method="POST" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="rgbInput">RGB Camera Image:</label>
+                    <input type="file" id="rgbInput" name="rgb_image" accept="image/*" required>
+                    <div class="preview-container" id="rgbPreview">
+                        <div class="preview-placeholder">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M19,19H5V5H19M19,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3M13.96,12.29L11.21,15.83L9.25,13.47L6.5,17H17.5L13.96,12.29Z" />
+                            </svg>
+                            <p>RGB preview will appear here</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="lidarInput">LiDAR Depth Image:</label>
+                    <input type="file" id="lidarInput" name="lidar_image" accept="image/*" required>
+                    <div class="preview-container" id="lidarPreview">
+                        <div class="preview-placeholder">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M12,2L4,5V6.09C4,11.38 7.11,16.28 12,17C16.89,16.28 20,11.38 20,6.09V5L12,2M12,19C7.58,19 4,16.31 4,12.83V8.83L12,11.83L20,8.83V12.83C20,16.31 16.42,19 12,19Z" />
+                            </svg>
+                            <p>LiDAR preview will appear here</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <button type="submit" class="submit-btn">
+                    <span class="button-text">Analyze Road</span>
+                    <span class="button-icon">→</span>
+                </button>
+            </form>
+        </section>
+
+        <section class="results-section">
+            <div class="section-header">
+                <h2>Analysis Results</h2>
+                <a href="{{ url_for('history') }}" class="view-history">View History</a>
+            </div>
+            <div id="resultContainer">
+                {% if error %}
+                <div class="error-message">
+                    <h3>Processing Error</h3>
+                    <p>{{ error }}</p>
+                </div>
+                {% endif %}
+                
+                {% if original_image and edge_image and nav_image %}
+                <div class="result-grid">
+                    <div class="result-card">
+                        <div class="card-header">
+                            <h3>Original View</h3>
+                        </div>
+                        <div class="card-body">
+                            <img src="{{ original_image }}" alt="Original Road View" class="result-image">
+                        </div>
+                    </div>
+                    
+                    <div class="result-card">
+                        <div class="card-header">
+                            <h3>Edge Detection</h3>
+                        </div>
+                        <div class="card-body">
+                            <img src="{{ url_for('static', filename='results/' + edge_image) }}" alt="Edge Detection" class="result-image">
+                        </div>
+                    </div>
+                    
+                    <div class="result-card">
+                        <div class="card-header">
+                            <h3>Navigation</h3>
+                        </div>
+                        <div class="card-body">
+                            <img src="{{ url_for('static', filename='results/' + nav_image) }}" alt="Navigation Decision" class="result-image">
+                            <div class="decision-info">
+                                <h4>Recommended Action:</h4>
+                                <p class="decision-{{ direction }}">{{ direction|upper }}</p>
+                                {% if direction == "blocked" %}
+                                <p class="warning">⚠️ High obstacle density detected</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% elif result_image %}
+                <div class="single-result">
+                    <img src="{{ result_image }}" alt="Processed Result" class="result-image">
+                    <div class="result-meta">
+                        <p>Analysis completed  {{ processing_time }}</p>
+                    </div>
+                </div>
+                {% else %}
+                <div class="placeholder">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M5,3H19A2,2 0 0,1 21,5V19A2,2 0 0,1 19,21H5A2,2 0 0,1 3,19V5A2,2 0 0,1 5,3M5,5V19H19V5H5M7,7H17V9H7V7M7,11H17V13H7V11M7,15H14V17H7V15Z" />
+                    </svg>
+                    <p>Upload RGB and LiDAR images to analyze road conditions</p>
+                </div>
+                {% endif %}
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <p>© 2025 VisionDrive | Intelligent Navigation System</p>
+            <div class="db-status">
+                <span class="db-indicator"></span>
+                <span>MongoDB Connected</span>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

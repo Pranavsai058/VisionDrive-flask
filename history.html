@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VisionDrive - Processing History</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>VisionDrive</h1>
+        <p>Processing History</p>
+    </header>
+
+    <main>
+        <section class="history-section">
+            <h2>Recent Processing Sessions</h2>
+            <div class="history-container">
+                {% if history %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Session ID</th>
+                            <th>Processed At</th>
+                            <th>RGB Image</th>
+                            <th>LiDAR Image</th>
+                            <th>Result</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in history %}
+                        <tr>
+                            <td>{{ item.session_id }}</td>
+                            <td>{{ item.processed_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                            <td>{{ item.rgb_filename }}</td>
+                            <td>{{ item.lidar_filename }}</td>
+                            <td>{{ item.result_filename }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <div class="placeholder">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M19,19H5V5H19M19,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3M13.96,12.29L11.21,15.83L9.25,13.47L6.5,17H17.5L13.96,12.29Z" />
+                    </svg>
+                    <p>No processing history found</p>
+                </div>
+                {% endif %}
+            </div>
+            <div class="actions">
+                <a href="{{ url_for('index') }}" class="button">Back to Upload</a>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>© 2025 VisionDrive | Intelligent Navigation System</p>
+    </footer>
+</body>
+</html>
